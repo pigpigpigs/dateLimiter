@@ -5,6 +5,7 @@ import 'package:food_limmit_controller/ui/util/custom_dialog.dart';
 import 'package:food_limmit_controller/ui/util/custom_radio_button.dart';
 import 'package:food_limmit_controller/ui/util/custom_textbutton_icon.dart';
 import 'package:hooks_riverpod/hooks_riverpod.dart';
+import 'package:package_info_plus/package_info_plus.dart';
 
 class SettingPage extends HookConsumerWidget {
   const SettingPage({super.key});
@@ -123,6 +124,46 @@ class SettingPage extends HookConsumerWidget {
                       '全てのデータを削除',
                       style: TextStyle(color: Colors.white),
                     ),
+                  ),
+                  SizedBox(height: 60),
+                  FutureBuilder(
+                    future: PackageInfo.fromPlatform(),
+                    builder: (context, snapshot) {
+                      if (snapshot.connectionState == ConnectionState.waiting) {
+                        // データの取得中はローディング表示
+                        return const Padding(
+                          padding: EdgeInsets.symmetric(horizontal: 8.0),
+                          child: Center(
+                            child: SizedBox(
+                              width: 20,
+                              height: 20,
+                              child: CircularProgressIndicator(
+                                color: Colors.white,
+                                strokeWidth: 2,
+                              ),
+                            ),
+                          ),
+                        );
+                      } else if (snapshot.hasError) {
+                        return const Padding(
+                          padding: EdgeInsets.symmetric(horizontal: 8.0),
+                          child: Text(
+                            'Version Error',
+                            style: TextStyle(color: Colors.red, fontSize: 12),
+                          ),
+                        );
+                      } else if (snapshot.hasData) {
+                        return Text(
+                          'Ver ${snapshot.data!.version}', // バージョン情報表示
+                          style: const TextStyle(
+                            color: Colors.white,
+                            fontSize: 14,
+                          ),
+                        );
+                      }
+                      //デフォルトはナにもなし
+                      return const SizedBox.shrink();
+                    },
                   ),
                 ],
               ),

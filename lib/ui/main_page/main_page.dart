@@ -172,14 +172,21 @@ class ItemContextBlock extends HookConsumerWidget {
                   ref
                       .read(completeAnimationFlugProvider.notifier)
                       .animationFlugChanger(true);
-                  await Future.wait([
-                    deleteAnimationController.forward(),
-                    ref.read(mainPageViewModelProvider.notifier).deleteItem(id),
-                  ]);
-                  deleteAnimationController.reset();
-                  ref
-                      .read(completeAnimationFlugProvider.notifier)
-                      .animationFlugChanger(false);
+                  try {
+                    await Future.wait([
+                      deleteAnimationController.forward(),
+                      ref
+                          .read(mainPageViewModelProvider.notifier)
+                          .deleteItem(id),
+                    ]);
+                    deleteAnimationController.reset();
+                  } catch (e) {
+                    debugPrint('Deletion or animation error: $e');
+                  } finally {
+                    ref
+                        .read(completeAnimationFlugProvider.notifier)
+                        .animationFlugChanger(false);
+                  }
                 },
                 child: Center(
                   child: Column(
